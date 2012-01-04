@@ -312,7 +312,7 @@ class PT::UI
     estimation = [-1, nil].include?(task.estimate) ? "Unestimated" : "#{task.estimate} points"
     message "#{task.current_state.capitalize} #{task.story_type} | #{estimation} | Req: #{task.requested_by} | Owns: #{task.owned_by} | Id: #{task.id}"
     message task.description unless task.description.empty?
-    task.tasks.all.each{ |t| message "- #{t.complete ? "(done) " : "(pend)"} #{t.description}" }
+    task.tasks.all.each{ |t| message "- #{t.complete ? "(done) ".green : "(pend)".yellow} #{t.description}" }
     task.notes.all.each{ |n| message "#{n.author}: \"#{n.text}\"" }
     task.attachments.each{ |a| message "#{a.uploaded_by} uploaded: \"#{a.description.empty? ? "#{a.filename}" : "#{a.description} (#{a.filename})" }\" #{a.url}" }
   end
