@@ -170,6 +170,16 @@ class PT::UI
     result = show_task(task)
   end
 
+  def current
+    title("Current sprint for #{project_to_s}")
+    iteration = @client.get_current_iteration(@project)
+    tasks = iteration.stories
+    tasks.delete_if {|story| story.story_type == "release"}
+    table = PT::TasksTable.new(tasks)
+    task = select("Please select a story to show", table)
+    result = show_task(task)
+  end
+
   def reject
     title("Tasks for #{user_s} in #{project_to_s}")
     tasks = @client.get_my_tasks_to_reject(@project, @local_config[:user_name])
