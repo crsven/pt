@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.add_dependency    'hirb', '>= 0.4.5'
   s.add_dependency    'colored', '>= 1.2'
   s.add_dependency    'highline', '>= 1.6.1'
+  s.add_dependency    'ncurses', '>= 0.9.1'
+  s.add_dependency    'rbcurse', '>= 1.5.0'
   s.rubyforge_project = "pt"
   s.platform          = Gem::Platform::RUBY
 end
