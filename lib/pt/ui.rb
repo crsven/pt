@@ -1,6 +1,7 @@
 require 'yaml'
 require 'colored'
 require 'highline'
+require 'ncurses'
 
 class PT::UI
 
@@ -9,7 +10,13 @@ class PT::UI
 
   def initialize(args)
     require 'pt/debugger' if ARGV.delete('--debug')
-    @io = HighLine.new
+    if ARGV.delete('--curses')
+      @output = "curses"
+      Ncurses.initscr()
+      @screen = Ncurses.stdscr
+    else
+      @io = HighLine.new
+    end
     @global_config = load_global_config
     @client = PT::Client.new(@global_config[:api_number])
     @local_config = load_local_config
@@ -20,9 +27,19 @@ class PT::UI
   end
 
   def my_work
-    title("My Work for #{user_s} in #{project_to_s}")
     stories = @client.get_my_work(@project, @local_config[:user_name])
-    PT::TasksTable.new(stories).print
+
+    if @output == "curses"
+      @screen.mvaddstr(0,0,"My Work for #{user_s} in #{project_to_s}")
+      @interface = PT::CursesInterface.new(@screen)
+      @interface.show_story_list(stories)
+      # selected = @interface.select_story(@screen)
+      Ncurses.getch()
+      Ncurses.endwin()
+    else
+      title("My Work for #{user_s} in #{project_to_s}")
+      PT::TasksTable.new(stories).print
+    end
   end
 
   def list
