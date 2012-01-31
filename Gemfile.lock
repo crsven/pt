@@ -1,0 +1,51 @@
+PATH
+  remote: .
+  specs:
+    pt (0.5)
+      colored (>= 1.2)
+      highline (>= 1.6.1)
+      hirb (>= 0.4.5)
+      ncurses (>= 0.9.1)
+      pivotal-tracker (>= 0.4.1)
+      rbcurse (>= 1.5.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    builder (3.0.0)
+    colored (1.2)
+    ffi (1.0.11)
+    ffi-locale (1.0.1)
+      ffi (>= 1.0.9)
+    ffi-ncurses (0.4.0)
+      ffi (>= 1.0.9)
+      ffi-locale (>= 1.0.0)
+    happymapper (0.4.0)
+      libxml-ruby (~> 2.0)
+    highline (1.6.9)
+    hirb (0.6.0)
+    libxml-ruby (2.2.2)
+    mime-types (1.17.2)
+    ncurses (0.9.1)
+    nokogiri (1.5.0)
+    pivotal-tracker (0.4.1)
+      builder
+      builder
+      happymapper (>= 0.3.2)
+      happymapper (>= 0.3.2)
+      nokogiri (>= 1.4.3)
+      nokogiri (~> 1.4)
+      rest-client (~> 1.6.0)
+      rest-client (~> 1.6.0)
+    rbcurse (1.5.0)
+      rbcurse-core (>= 0.0)
+    rbcurse-core (0.0.3)
+      ffi-ncurses (>= 0.4.0)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pt!

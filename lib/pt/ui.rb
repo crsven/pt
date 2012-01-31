@@ -33,7 +33,8 @@ class PT::UI
       @screen.mvaddstr(0,0,"My Work for #{user_s} in #{project_to_s}")
       @interface = PT::CursesInterface.new(@screen)
       @interface.show_story_list(stories)
-      # selected = @interface.select_story(@screen)
+      selected  = @interface.select_story
+      tasks = @client.get_my_work(@project, @local_config[:user_name])
       Ncurses.getch()
       Ncurses.endwin()
     else
