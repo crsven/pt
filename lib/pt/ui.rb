@@ -30,8 +30,8 @@ class PT::UI
     stories = @client.get_my_work(@project, @local_config[:user_name])
 
     if @output == "curses"
-      @screen.mvaddstr(0,0,"My Work for #{user_s} in #{project_to_s}")
       @interface = PT::CursesInterface.new(@screen)
+      @interface.print_title("My Work for #{user_s} in #{project_to_s}")
       @interface.show_story_list(stories)
       selected  = @interface.select_story
       tasks = @client.get_my_work(@project, @local_config[:user_name])

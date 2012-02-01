@@ -6,6 +6,10 @@ module PT
       @story_row = 1
     end
 
+    def print_title(title)
+      @screen.mvaddstr(0,0,title)
+    end
+
     def show_story_list(stories)
       row = @story_row
       stories.each do |story|
