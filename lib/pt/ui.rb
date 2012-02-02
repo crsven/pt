@@ -13,6 +13,8 @@ class PT::UI
     if ARGV.delete('--curses')
       @output = "curses"
       Ncurses.initscr()
+      @interface = PT::CursesInterface.new(@screen)
+      @interface.show_menu
     else
       @io = HighLine.new
     end
@@ -29,9 +31,7 @@ class PT::UI
     stories = @client.get_my_work(@project, @local_config[:user_name])
 
     if @output == "curses"
-      @interface = PT::CursesInterface.new(@screen)
-      @interface.show_menu
-      Ncurses.refresh()
+      @interface.show_story_list(stories)
       Ncurses.endwin()
     else
       title("My Work for #{user_s} in #{project_to_s}")
