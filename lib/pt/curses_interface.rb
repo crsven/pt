@@ -4,10 +4,20 @@ module PT
     def initialize(screen)
       @screen = screen
       @story_row = 1
+      @menu_window = Ncurses.newwin(20,20,0,0)
+      @preview_window = Ncurses.newwin(50,100,0,21)
     end
 
-    def print_title(title)
-      @screen.mvaddstr(0,0,title)
+    def show_menu
+      @menu_window.mvaddstr(1,1,"Menu:")
+      @menu_window.mvaddstr(2,1,"-----")
+      @menu_window.box(0,0)
+      @menu_window.refresh()
+      @menu_window.getch()
+    end
+
+    def print_title(window, title)
+      window.wprintw(title)
     end
 
     def show_story_list(stories)
