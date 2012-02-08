@@ -6,11 +6,21 @@ module PT
       @story_row = 1
       @menu_window = Ncurses.newwin(20,30,0,0)
       @preview_window = Ncurses.newwin(50,100,0,35)
+      @menu_options = {
+        "My work" => 109,
+        "Current Sprint" => 99,
+        "Next Sprint" => 110
+      }
     end
 
     def show_menu
       @menu_window.mvaddstr(1,1,"Menu:")
       @menu_window.mvaddstr(2,1,"-----")
+      menu_row = 3
+      @menu_options.each do |option, character|
+        @menu_window.mvaddstr(menu_row,1,"#{character.chr}: #{option}")
+        menu_row+=1
+      end
       @menu_window.box(0,0)
       @menu_window.refresh()
     end
