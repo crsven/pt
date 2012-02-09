@@ -17,6 +17,8 @@ module PT
 
     def get_input(window)
       global_options = @menu_options.merge(@preview_options)
+      Ncurses.raw()
+      Ncurses.noecho()
       selection = window.getch()
       # global_options contains a hash of character codes and functions (currently strings to test)
       if global_options.has_key?(selection)
@@ -40,26 +42,18 @@ module PT
       @stories = stories
       row = @story_row
       @preview_window.clear()
+      @preview_options.clear
       stories.each do |story|
         @preview_window.mvaddstr(row, 1, "#{row}. #{story.name}")
-        @preview_options["#{row}"[0]] = story.id
+        @preview_options["#{row}"[0]] = story.id # TODO: Better way to get character code?
         row+=1
       end
+      @preview_window.mvaddstr(row, 1, "Select a story or menu item to continue...")
       @preview_window.box(0,0)
       @preview_window.refresh()
-      @story_row = row
+      @story_row = row+1
       get_input(@preview_window)
       @preview_window.getch()
     end
-
-    def select_story
-      @preview_window.mvaddstr(@story_row,1,"Which story would you like to see?:")
-      Ncurses.raw()
-      Ncurses.noecho()
-      @story_row+=1
-      char = @preview_window.mvgetch(@story_row,1)
-      @preview_window.mvaddstr(@story_row,1,"#{char.chr.to_i}: #{@stories[char.chr.to_i].name}")
-    end
   end
-
 end
