@@ -1,27 +1,16 @@
 require 'yaml'
 require 'colored'
 require 'highline'
-require 'ncurses'
 
 class PT::UI
 
-  GLOBAL_CONFIG_PATH = ENV['HOME'] + "/.pt"
-  LOCAL_CONFIG_PATH = Dir.pwd + '/.pt'
-
   def initialize(args)
     require 'pt/debugger' if ARGV.delete('--debug')
-    if ARGV.delete('--curses')
-      @output = "curses"
-      Ncurses.initscr()
-      @interface = PT::CursesInterface.new(@screen)
-      @interface.show_menu
-    else
-      @io = HighLine.new
-    end
-    @global_config = load_global_config
-    @client = PT::Client.new(@global_config[:api_number])
-    @local_config = load_local_config
-    @project = @client.get_project(@local_config[:project_id])
+    @io = HighLine.new
+    @global_config = PT.load_global_config
+    @local_config = PT.load_local_config
+    @project = PT.project
+    @client = PT.client
     command = args[0].to_sym rescue :my_work
     @params = args[1..-1]
     commands.include?(command.to_sym) ? send(command.to_sym) : help
@@ -30,13 +19,8 @@ class PT::UI
   def my_work
     stories = @client.get_my_work(@project, @local_config[:user_name])
 
-    if @output == "curses"
-      @interface.show_story_list(stories)
-      Ncurses.endwin()
-    else
-      title("My Work for #{user_s} in #{project_to_s}")
-      PT::TasksTable.new(stories).print
-    end
+    title("My Work for #{user_s} in #{project_to_s}")
+    PT::TasksTable.new(stories).print
   end
 
   def list
@@ -415,61 +399,7 @@ class PT::UI
     (public_methods - Object.public_methods).sort.map{ |c| c.to_sym}
   end
 
-  # Config
-
-  def load_global_config
-    config = YAML.load(File.read(GLOBAL_CONFIG_PATH)) rescue {}
-    if config.empty?
-      message "I can't find info about your Pivotal Tracker account in #{GLOBAL_CONFIG_PATH}"
-      while !config[:api_number] do
-        config[:email] = ask "What is your email?"
-        password = ask_secret "And your password? (won't be displayed on screen)"
-        begin
-          config[:api_number] = PT::Client.get_api_token(config[:email], password)
-        rescue PT::InputError => e
-          error e.message + " Please try again."
-        end
-      end
-      congrats "Thanks!",
-               "Your API id is " + config[:api_number],
-               "I'm saving it in #{GLOBAL_CONFIG_PATH} to don't ask you again."
-      save_config(config, GLOBAL_CONFIG_PATH)
-    end
-    config
-  end
-
-  def load_local_config
-    check_local_config_path
-    config = YAML.load(File.read(LOCAL_CONFIG_PATH)) rescue {}
-    if config.empty?
-      message "I can't find info about this project in #{LOCAL_CONFIG_PATH}"
-      projects = PT::ProjectTable.new(@client.get_projects)
-      project = select("Please select the project for the current directory", projects)
-      config[:project_id], config[:project_name] = project.id, project.name
-      project = @client.get_project(project.id)
-      membership = @client.get_membership(project, @global_config[:email])
-      config[:user_name], config[:user_id], config[:user_initials] = membership.name, membership.id, membership.initials
-      congrats "Thanks! I'm saving this project's info",
-               "in #{LOCAL_CONFIG_PATH}: remember to .gitignore it!"
-      save_config(config, LOCAL_CONFIG_PATH)
-    end
-    config
-  end
-
-  def check_local_config_path
-    if GLOBAL_CONFIG_PATH == LOCAL_CONFIG_PATH
-      error("Please execute .pt inside your project directory and not in your home.")
-      exit
-    end
-  end
-
-  def save_config(config, path)
-    File.new(path, 'w') unless File.exists?(path)
-    File.open(path, 'w') {|f| f.write(config.to_yaml) }
-  end
-
   # I/O
-
   def split_lines(text)
     text.respond_to?(:join) ? text.join("\n") : text
   end
